@@ -1,24 +1,12 @@
-import mysql.connector
+import users.connection as connection
 import datetime
 import hashlib
 #* 👆 Importing the MySQL module and connect with the data base
 
 
-#! Creating the data base variable for connection
-
-database = mysql.connector.connect(
-    host = "localhost",
-    user = "root",
-    password = "",
-    database = "console_notes",
-    port = 3306
-)
-
-#! Creating the cursor to can make consults
-#* REMEMBER: the buffered=True parameter is to could use the the cursor multiple times
-cursor = database.cursor(buffered=True)
-
-print(database)
+connect = connection.connect()
+database = connect[0]
+cursor = connect[1]
 
 class User:
     
@@ -33,7 +21,7 @@ class User:
     def register(self):
         date = datetime.datetime.now()
         
-        #* Así ciframos la contraseña:
+        #* This is how we can encode the password
         encode = hashlib.sha256()
         encode.update(self.password.encode('utf8'))
         
@@ -50,4 +38,18 @@ class User:
         return result
         
     def identify(self):
-        return self.name
+        #! This is to comprobe that the user exists
+        sql = "SELECT * FROM users  WHERE email = %s AND password = %s"
+        
+        
+        #* This is how we can encode the password
+        encode = hashlib.sha256()
+        encode.update(self.password.encode('utf8'))
+        
+        #! Data for consultation
+        user = (self.email, encode.hexdigest())
+        
+        cursor.execute(sql, user)
+        result = cursor.fetchone()
+        
+        return result

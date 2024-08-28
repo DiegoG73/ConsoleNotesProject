@@ -28,5 +28,43 @@ class Actions:
 
     def login(self):
         print("Please sign in with your email and password")
-        email = input("Please introduce your email: ")
-        password = input("Now, please introduce your password: ")
+        try:
+            email = input("Please introduce your email: ")
+            password = input("Now, please introduce your password: ")
+            
+            user = model.User('', '', email, password)
+            login = user.identify()
+            
+            if email == login[3]:
+                print(f"\nWelcome {login[1]}, you have registered on: {login[5]}")
+                self.nextActions(login)
+        except Exception as e:
+            print(type(e))
+            print(type(e).__name__)
+            print(f"Incorrect, please try again later")
+            
+    def nextActions(self, user):
+        print("""
+            Available actions:
+            - Create a note (create)
+            - Show notes    (show)
+            - Delete notes  (delete)
+            - Exit          (EXIT)
+        """)
+        
+        action = input("What do you wanna do? ")
+        
+        if action == "create":
+            print("Let's create")
+            self.nextActions(user)
+        elif action == "show":
+            print("Let me show you your notes")
+            self.nextActions(user)
+        elif action == "delete":
+            print("Tell me, which one do you want to delete?")
+            self.nextActions(user)
+        elif action == "exit":
+            exit()
+        else:
+            print("Please, introduce a valid option")
+            self.nextActions(user)
